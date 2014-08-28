@@ -26,5 +26,6 @@ typedef enum booleans
 //void read_input();
 /*Clears residual data from stdin*/
 void read_rest_of_line(void);
+void clear_screen(void);
 
 #endif

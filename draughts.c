@@ -18,6 +18,7 @@ int main (int argc, char *argv[])
 
     enum cell_contents master_board[BOARDWIDTH][BOARDHEIGHT];
 
+    clear_screen();
     print_menu();
 
     sel = read_input();
@@ -68,45 +69,54 @@ char read_input()
 
 void do_option(char choice)
 {
-	char * player_one = NULL;
-	char * player_two = NULL;
+	int Exit = 0;
 
-	if(choice == '1')
-	{
-		printf("Play Game selected\n");
-		printf("Player 1, enter name: ");
-
-		if (fgets(player_one, MAX_NAME_LEN, stdin) != NULL)
+	while(!Exit)
+	{	
+		if(choice == '1')
 		{
-			printf("Player 2, enter name: ");
-			if (fgets(player_two, MAX_NAME_LEN, stdin) != NULL)
+			char player_one[MAX_NAME_LEN] = {'\0'};
+			char player_two[MAX_NAME_LEN] = {'\0'};
+
+			printf("Play Game selected\n");
+			printf("Player 1, enter name: ");
+
+			if (fgets(player_one, MAX_NAME_LEN, stdin) != NULL)
 			{
-				printf("DONE\n");
+				printf("%s\n", player_one);
+				printf("Player 2, enter name: ");
+				if (fgets(player_two, MAX_NAME_LEN, stdin) != NULL)
+				{
+					printf("DONE\n");
+					// play_game(*player_one, *player_two);
+				}
+				else
+				{
+				printf("Error: Name may be too long or invalid.\n");
+				}
 			}
 			else
 			{
-			printf("Error: Name may be too long or invalid.\n");
+				printf("Error: Name may be too long or invalid.\n");
 			}
+		}
+		else if(choice == '2')
+		{
+			printf("Leaderboard selected\n");
+		}
+		else if(choice == '3')
+		{
+			printf("Reset scores selected\n");
+		}
+		else if(choice == '4')
+		{
+			printf("Quit selected\n");
+			Exit = 1;
 		}
 		else
 		{
-			printf("Error: Name may be too long or invalid.\n");
+			printf("Error: Please choose a valid input from 1-4.\n");
+			read_input();
 		}
-	}
-	else if(choice == '2')
-	{
-		printf("Leaderboard selected\n");
-	}
-	else if(choice == '3')
-	{
-		printf("Reset scores selected\n");
-	}
-	else if(choice == '4')
-	{
-		printf("Quit selected\n");
-	}
-	else
-	{
-		printf("Error: Please choose a valid input from 1-4.\n");
 	}
 }
