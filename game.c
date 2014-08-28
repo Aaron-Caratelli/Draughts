@@ -16,7 +16,7 @@ void play_game(char * player_one, char * player_two,
 {
     enum cell_contents gameboard[BOARDWIDTH][BOARDHEIGHT];
     
-    // init_gameboard(gameboard);
+    init_gameboard(gameboard);
 
     display_gameboard(gameboard);
     /* Delete this comment and write your own comments and code here*/

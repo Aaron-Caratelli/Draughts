@@ -54,7 +54,7 @@ char read_input()
 		if(input[strlen(input)-1] != '\n')
 		{
 			printf("Error: Input was too long. \n");
-			// read_rest_of_line();
+			read_rest_of_line();
 		}
 		else
 		{
@@ -83,21 +83,44 @@ void do_option(char choice)
 
 			if (fgets(player_one, MAX_NAME_LEN, stdin) != NULL)
 			{
-				printf("%s\n", player_one);
+				if(player_one[strlen(player_one)-1] != '\n')
+				{
+					printf("Error: Input was too long. \n");				//NOTE: Here's where I left off. Input validation not complete
+					read_rest_of_line();
+				}
+				else
+				{
+					player_one[strlen(player_one)-1] = '\0';printf("%s\n", player_one);
+				}
+
+				read_rest_of_line();
+
 				printf("Player 2, enter name: ");
 				if (fgets(player_two, MAX_NAME_LEN, stdin) != NULL)
 				{
+					if(player_one[strlen(player_one)-1] != '\n')
+					{
+						printf("Error: Input was too long or invalid. \n");
+						read_rest_of_line();
+					}
+					else
+					{
+						player_one[strlen(player_one)-1] = '\0';printf("%s\n", player_one);
+					}
 					printf("DONE\n");
+					read_rest_of_line();
 					// play_game(*player_one, *player_two);
 				}
 				else
 				{
-				printf("Error: Name may be too long or invalid.\n");
+				printf("Error: Name may be too long or invalid or invalid.\n");
+				read_rest_of_line();
 				}
 			}
 			else
 			{
 				printf("Error: Name may be too long or invalid.\n");
+				read_rest_of_line();
 			}
 		}
 		else if(choice == '2')
@@ -116,7 +139,7 @@ void do_option(char choice)
 		else
 		{
 			printf("Error: Please choose a valid input from 1-4.\n");
-			read_input();
+			choice = read_input();
 		}
 	}
 }
