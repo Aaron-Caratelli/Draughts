@@ -14,6 +14,7 @@
 void play_game(char * player_one, char * player_two, 
     struct result * outcome)
 {
+    printf("YOU MADE IT, MATE");
     enum cell_contents gameboard[BOARDWIDTH][BOARDHEIGHT];
     
     init_gameboard(gameboard);

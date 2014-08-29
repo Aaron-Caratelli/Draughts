@@ -14,7 +14,6 @@
 int main (int argc, char *argv[])
 {
 	char sel = '\0';
-    struct result scoreboard[SCOREBOARDSIZE];
 
     enum cell_contents master_board[BOARDWIDTH][BOARDHEIGHT];
 
@@ -23,10 +22,11 @@ int main (int argc, char *argv[])
 
     sel = read_input();
     do_option(sel);
-    
-  	display_gameboard(master_board);
 
-    printf("\x1b[39m" "Program End\n");
+  	display_gameboard(master_board);
+  	printf("-------------ENGLISH DRAUGHTS------------\n");
+
+    printf("\x1b[39m" "THANKS FOR PLAYING! Program End\n");
     return EXIT_SUCCESS;
 }
 
@@ -70,6 +70,7 @@ char read_input()
 void do_option(char choice)
 {
 	int Exit = 0;
+	int valid = 0;
 
 	while(!Exit)
 	{	
@@ -85,36 +86,39 @@ void do_option(char choice)
 			{
 				if(player_one[strlen(player_one)-1] != '\n')
 				{
-					printf("Error: Input was too long. \n");				//NOTE: Here's where I left off. Input validation not complete
+					printf("Error: Input was too long or invalid. \n");				//NOTE: Here's where I left off. Input validation not complete
 					read_rest_of_line();
+					do_option(choice);
 				}
 				else
 				{
 					player_one[strlen(player_one)-1] = '\0';printf("%s\n", player_one);
 				}
 
-				read_rest_of_line();
-
-				printf("Player 2, enter name: ");
-				if (fgets(player_two, MAX_NAME_LEN, stdin) != NULL)
+				while(1)
 				{
-					if(player_one[strlen(player_one)-1] != '\n')
+					printf("Player 2, enter name: ");
+					if(fgets(player_two, MAX_NAME_LEN, stdin) != NULL)
 					{
-						printf("Error: Input was too long or invalid. \n");
-						read_rest_of_line();
+						if(player_two[strlen(player_two)-1] != '\n')
+						{
+							printf("Error: Input was too long or invalid. \n");
+							read_rest_of_line();
+						}
+						else
+						{
+							player_two[strlen(player_two)-1] = '\0';printf("%s\n", player_two);
+						}
+						printf("DONE\n");
+
+    					struct result scoreboard[SCOREBOARDSIZE];		//initialise scoreboard
+						// play_game(*player_one, *player_two, scoreboard);
 					}
 					else
 					{
-						player_one[strlen(player_one)-1] = '\0';printf("%s\n", player_one);
-					}
-					printf("DONE\n");
+					printf("Error: Name may be too long or invalid.\n");
 					read_rest_of_line();
-					// play_game(*player_one, *player_two);
-				}
-				else
-				{
-				printf("Error: Name may be too long or invalid or invalid.\n");
-				read_rest_of_line();
+					}
 				}
 			}
 			else
