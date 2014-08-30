@@ -1,4 +1,4 @@
-/***********************************************************************
+  /***********************************************************************
  * COSC1076 - Advanced Programming Techniques
  * Semester 2 2014 Assignment #1 
  * Full Name        : EDIT HERE
@@ -24,10 +24,10 @@ void add_to_scoreboard(struct result * scoreboard,
    /*FILE *fp;
    int ch;
 
-   fp = fopen("file.txt", "w+");
+   fp = fopen("file.txt", "w+"); 
    for( ch = 33 ; ch <= 100; ch++ )
    {
-      fputc(ch, fp);
+      fputc(ch, fp);      //fput("| %s        | %s      |\n", WINNER, LOSER);
    }
    fclose(fp);
 

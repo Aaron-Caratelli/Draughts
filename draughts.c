@@ -43,14 +43,14 @@ int main (int argc, char *argv[])
 
 char read_input()
 {
-	char input[SIZE + 2];
+	char input[SELECTION_SIZE + 2];
 	int done = 0;
 	char choice = '0';
 
 	do
 	{
 		printf("\nInput: ");
-		fgets(input, SIZE + 2, stdin);
+		fgets(input, SELECTION_SIZE + 2, stdin);
 		if(input[strlen(input)-1] != '\n')
 		{
 			printf("Error: Input was too long. \n");
@@ -109,10 +109,9 @@ void do_option(char choice)
 						{
 							player_two[strlen(player_two)-1] = '\0';printf("%s\n", player_two);
 						}
-						printf("DONE\n");
 
     					struct result scoreboard[SCOREBOARDSIZE];		//initialise scoreboard
-						// play_game(*player_one, *player_two, scoreboard);
+						play_game(player_one, player_two, scoreboard);
 					}
 					else
 					{

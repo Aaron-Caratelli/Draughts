@@ -13,7 +13,7 @@
 #include "game.h"
 #include "utility.h"
 
-#define SIZE 1
+#define SELECTION_SIZE 1
 
 /*Displays the main menu on the screen*/
  void print_menu();

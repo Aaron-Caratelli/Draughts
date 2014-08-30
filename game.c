@@ -14,13 +14,40 @@
 void play_game(char * player_one, char * player_two, 
     struct result * outcome)
 {
-    printf("YOU MADE IT, MATE");
     enum cell_contents gameboard[BOARDWIDTH][BOARDHEIGHT];
     
+    //Copy the masterboard onto the current gameboard
     init_gameboard(gameboard);
 
-    display_gameboard(gameboard);
-    /* Delete this comment and write your own comments and code here*/
+    int i;
+    struct player p1;
+    for(i = 0; i < MAX_NAME_LEN; i++)
+    {
+        p1.name[i] = player_one[i];
+    }
+    struct player p2;
+    for(i = 0; i < MAX_NAME_LEN; i++)
+    {
+        p2.name[i] = player_two[i];
+    }
+
+    int side = 0;  //Number deciding what colour each player will be
+
+    //INSERT RANDOM NO. GEN 0-1
+
+    if(side == 0)
+    {
+        p1.col = P_RED;
+        p2.col = P_WHITE;
+    }
+    else if(side ==1)
+    {
+        p1.col = P_WHITE;
+        p2.col = P_RED;
+    }
+
+    printf("%s %d\n", p1.name, p1.col);
+    printf("%s %d\n", p2.name, p2.col);
 
 }
 
