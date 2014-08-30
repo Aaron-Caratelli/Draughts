@@ -18,6 +18,7 @@ void play_game(char * player_one, char * player_two,
     
     //Copy the masterboard onto the current gameboard
     init_gameboard(gameboard);
+    init_scoreboard(outcome);
 
     int i;
     struct player p1;
@@ -74,4 +75,11 @@ BOOLEAN test_for_winner(struct player * next_player,
     BOOLEAN has_moves = TRUE;
 
     return has_moves;
+}
+
+void quit_early(struct result * scoreboard, 
+    struct result * latest_game)
+{
+    init_scoreboard(latest_game);
+    add_to_scoreboard(latest_game);
 }

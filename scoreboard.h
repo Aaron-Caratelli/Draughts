@@ -14,6 +14,7 @@
 #include "utility.h"
 
 #define SCOREBOARDSIZE 10
+#define PREV_NINE_SIZE 740
 
 struct result
 {
@@ -26,8 +27,7 @@ struct result
 void init_scoreboard(struct result * scoreboard);
 
 /* Adds a result to the beginning of the scoreboard*/
-void add_to_scoreboard(struct result * scoreboard, 
-    struct result * latest_game);
+void add_to_scoreboard(struct result * latest_game);
 
 /* Req 11 - Initialises the scoreboard and sets all the strings to be 
  * empty*/
