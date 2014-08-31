@@ -1,10 +1,10 @@
 /***********************************************************************
  * COSC1076 - Advanced Programming Techniques
  * Semester 2 2014 Assignment #1 
- * Full Name        : EDIT HERE
- * Student Number   : EDIT HERE
- * Course Code      : EDIT HERE
- * Program Code     : EDIT HERE
+ * Full Name        : Aaron Caratelli
+ * Student Number   : s3352594
+ * Course Code      : COSC10176
+ * Program Code     : BP094
  * Start up code provided by Paul Miller and Virginia King
  **********************************************************************/
 #include "gameboard.h"
@@ -46,19 +46,19 @@ void display_gameboard(enum cell_contents board[][BOARDWIDTH])
     	printf(" %d ", row);
 	    for(column = 0; column < BOARDWIDTH; column++) 
 	    {
-	    	if(master_board[row][column] == 0)
+	    	if(board[row][column] == 0)
 	        printf("|  %s ", WHITE_RESET);
 	    	
-	    	if(master_board[row][column] == 1)
+	    	if(board[row][column] == 1)
 	        printf("| %s ", RED_DISPLAY);
 	    	
-	    	if(master_board[row][column] == 2)
+	    	if(board[row][column] == 2)
 	        printf("| %s ", WHITE_DISPLAY);
 	    	
-	    	if(master_board[row][column] == 3)
+	    	if(board[row][column] == 3)
 	        printf("| %s ", RED_KING_DISPLAY);
 
-	    	if(master_board[row][column] == 4)
+	    	if(board[row][column] == 4)
 	        printf("| %s ", WHITE_KING_DISPLAY);
 
 	    	printf("%s", WHITE_RESET);

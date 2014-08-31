@@ -3,8 +3,8 @@
  * Semester 2 2014 Assignment #1 
  * Full Name        : Aaron Caratelli
  * Student Number   : s3352594
- * Course Code      : COSC1076
- * Program Code     : 
+ * Course Code      : COSC10176
+ * Program Code     : BP094
  * Start up code provided by Paul Miller and Virginia King
  **********************************************************************/
 #include "draughts.h"

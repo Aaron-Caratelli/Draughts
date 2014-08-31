@@ -3,8 +3,8 @@
  * Semester 2 2014 Assignment #1 
  * Full Name        : Aaron Caratelli
  * Student Number   : s3352594
- * Course Code      : 
- * Program Code     : EDIT HERE
+ * Course Code      : COSC10176
+ * Program Code     : BP094
  * Start up code provided by Paul Miller and Virginia King
  **********************************************************************/
 #include "game.h"
@@ -89,46 +89,235 @@ enum str_result player_turn(struct player * current,
     struct move next_move;
     struct player Player = *current;
 
-    display_gameboard(board);
+    enum move_type state = NORMAL;
+    do 
+    {
+        display_gameboard(board);
+        if(state == INVALID)
+        {
+            printf("%s", RED_SET);
+            printf("INVLAID MOVE");
+            printf("%s\n", WHITE_RESET);
+        }
 
-    if(Player.col == P_RED)
-    {
-        printf("%s", RED_SET);
-        printf("%s's ", Player.name);
-        printf("%s", WHITE_RESET);
-        printf("turn: \n");
-    }
-    else
-    {
-        printf("%s's turn: \n", Player.name);
-    }
-    
-    while(1)//(is_valid_move != INVALID)
-    {
+        if(Player.col == P_RED)
+        {
+            printf("%s", RED_SET);
+            printf("%s's ", Player.name);
+            printf("%s", WHITE_RESET);
+            printf("turn: \n");
+        }
+        else
+        {
+            printf("%s's turn: \n", Player.name);
+        }
+
         printf("Select piece to move: \n");
-        printf("Column: \n");  
-        next_move.start.x = read_input()-48;
-        printf("Row: \n");
-        next_move.start.y = read_input()-48;
+        printf("Row");  
+        next_move.start.y = read_input();
+        printf("Column");
+        next_move.start.x = read_input();
 
-        printf("%d\n", next_move.start.x);
-        printf("%d\n", next_move.start.y);
-    }
+        printf("Select destination: \n");
+        printf("Row");
+        next_move.end.y = read_input();
+        printf("Column");
+        next_move.end.x = read_input();
+        state = is_valid_move(next_move, current, board);
+
+    }while(state == INVALID);
 }
 
 /* Requirement 4 - Tests to see whether a move is valid or not*/
 enum move_type is_valid_move(struct move next_move, 
     struct player * current, enum cell_contents board[][BOARDWIDTH])
 {
-    //if cell contains nothing (cellColour == EMPTY)
-    //return INVALID;
-    //if cell contains non-player colour (cellColour != current.col)
-    //return INVALID;
-    //if cell contains player colour (cellColour == current.col)
-    //LOGIC
-        //if KING  (K_RED || K_WHITE)
-        //LOGIC
-    //RETURN VALID/NOT
+    struct player Player = *current;
+
+    if(board[next_move.start.y][next_move.start.x] == EMPTY)
+    {
+        return INVALID;
+    }
+
+    if(Player.col == P_WHITE)
+    {
+        if(board[next_move.start.y][next_move.start.x] != WHITE 
+            && board[next_move.start.y][next_move.start.x] != K_WHITE)
+        {
+            return INVALID;
+        }
+
+        if(board[next_move.end.y][next_move.end.x] == EMPTY)
+        {
+            if(next_move.start.x - next_move.end.x == -1 || next_move.start.x - next_move.end.x == 1)
+            {
+                if(next_move.start.y - next_move.end.y == -1 || next_move.start.y - next_move.end.y == 1) //change
+                {
+                    board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
+                    board[next_move.start.y][next_move.start.x] = EMPTY;
+                    return NORMAL;
+                }
+                else
+                    return INVALID;
+            }
+            else if(next_move.start.x - next_move.end.x == -2)
+            {
+                if(next_move.start.y - next_move.end.y == 2)
+                {
+                    if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == RED
+                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_RED)
+                    {
+                        board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
+                        board[next_move.start.y][next_move.start.x] = EMPTY;
+                        board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                        return ATTACK;
+                    }
+                    return INVALID;
+                }
+                else if(next_move.start.y - next_move.end.y == -2)
+                {
+                    if(board[next_move.start.y][next_move.start.x] == K_WHITE)
+                    {
+                        if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == RED
+                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_RED)
+                        {
+                            board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
+                            board[next_move.start.y][next_move.start.x] = EMPTY;
+                            board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                            return ATTACK;
+                        }
+                        return INVALID;
+                    }
+                    return INVALID;
+                }
+            }
+            else if(next_move.start.x - next_move.end.x == 2)
+            {
+                if(next_move.start.y - next_move.end.y == 2)
+                {
+                    if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == RED
+                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_RED)
+                    {
+                        board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
+                        board[next_move.start.y][next_move.start.x] = EMPTY;
+                        board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                        return ATTACK;
+                    }
+                    return INVALID;
+                }
+                else if(next_move.start.y - next_move.end.y == -2)
+                {
+                    if(board[next_move.start.y][next_move.start.x] == K_WHITE)
+                    {
+                        if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == RED
+                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_RED)
+                        {
+                            board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
+                            board[next_move.start.y][next_move.start.x] = EMPTY;
+                            board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                            return ATTACK;
+                        }
+                        return INVALID;
+                    }
+                    return INVALID;
+                }
+            }
+            return INVALID;
+        }
+
+        //Is it one away?
+        //Is is it 2 away?
+            //is there a piece in between?
+        return INVALID;
+    }
+    else if(Player.col == P_RED)
+    {
+        if(board[next_move.start.y][next_move.start.x] != RED 
+            && board[next_move.start.y][next_move.start.x] != K_RED)
+        {
+            return INVALID;
+        }
+
+        if(board[next_move.end.y][next_move.end.x] == EMPTY)
+        {
+            if(next_move.start.x - next_move.end.x == -1 || next_move.start.x - next_move.end.x == 1)
+            {
+                if(next_move.start.y - next_move.end.y == -1 || next_move.start.y - next_move.end.y == 1) //change
+                {
+                    board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
+                    board[next_move.start.y][next_move.start.x] = EMPTY;
+                    return NORMAL;
+                }
+                else
+                    return INVALID;
+            }
+            else if(next_move.start.x - next_move.end.x == -2)
+            {
+                if(next_move.start.y - next_move.end.y == 2)
+                {
+                    if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == WHITE
+                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_WHITE)
+                    {
+                        board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
+                        board[next_move.start.y][next_move.start.x] = EMPTY;
+                        board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                        return ATTACK;
+                    }
+                    return INVALID;
+                }
+                else if(next_move.start.y - next_move.end.y == -2)
+                {
+                    if(board[next_move.start.y][next_move.start.x] == K_WHITE)
+                    {
+                        if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == WHITE
+                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_WHITE)
+                        {
+                            board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
+                            board[next_move.start.y][next_move.start.x] = EMPTY;
+                            board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                            return ATTACK;
+                        }
+                        return INVALID;
+                    }
+                    return INVALID;
+                }
+            }
+            else if(next_move.start.x - next_move.end.x == 2)
+            {
+                if(next_move.start.y - next_move.end.y == 2)
+                {
+                    if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == WHITE
+                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_WHITE)
+                    {
+                        board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
+                        board[next_move.start.y][next_move.start.x] = EMPTY;
+                        board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                        return ATTACK;
+                    }
+                    return INVALID;
+                }
+                else if(next_move.start.y - next_move.end.y == -2)
+                {
+                    if(board[next_move.start.y][next_move.start.x] == K_WHITE)
+                    {
+                        if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == WHITE
+                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_WHITE)
+                        {
+                            board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
+                            board[next_move.start.y][next_move.start.x] = EMPTY;
+                            board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                            return ATTACK;
+                        }
+                        return INVALID;
+                    }
+                    return INVALID;
+                }
+                return INVALID;
+            }
+            return INVALID;
+        }
+        return INVALID;
+    }
     
     return INVALID;
 }

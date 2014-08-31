@@ -1,10 +1,10 @@
-  /***********************************************************************
+/***********************************************************************
  * COSC1076 - Advanced Programming Techniques
  * Semester 2 2014 Assignment #1 
- * Full Name        : EDIT HERE
- * Student Number   : EDIT HERE
- * Course Code      : EDIT HERE
- * Program Code     : EDIT HERE
+ * Full Name        : Aaron Caratelli
+ * Student Number   : s3352594
+ * Course Code      : COSC10176
+ * Program Code     : BP094
  * Start up code provided by Paul Miller and Virginia King
  **********************************************************************/
 
@@ -135,9 +135,9 @@ void display_scoreboard()
   }
   printf("%s\n", content);
 
-  char yn = 'n';
-  printf("Back to menu? (y/n):\n");
-  while(yn != 'y')
+  int yn = 0;
+  printf("Back to menu? (Input 1):\n");
+  while(yn != 1)
   {
     yn = read_input();
   }

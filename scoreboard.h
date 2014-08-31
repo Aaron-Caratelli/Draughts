@@ -1,10 +1,10 @@
 /***********************************************************************
  * COSC1076 - Advanced Programming Techniques
  * Semester 2 2014 Assignment #1 
- * Full Name        : EDIT HERE
- * Student Number   : EDIT HERE
- * Course Code      : EDIT HERE
- * Program Code     : EDIT HERE
+ * Full Name        : Aaron Caratelli
+ * Student Number   : s3352594
+ * Course Code      : COSC10176
+ * Program Code     : BP094
  * Start up code provided by Paul Miller and Virginia King
  **********************************************************************/
  
