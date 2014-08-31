@@ -113,13 +113,33 @@ void add_to_scoreboard(struct result * latest_game)
  * empty*/
 void reset_scoreboard(struct result * scoreboard)
 {
-    /* Delete this comment and write your own comments and code here*/
+    FILE *fp = fopen("scoreboard", "w");
+    fclose(fp);
+    return;
 }
 
 /* Req 10 - Displays a formatted printout of the last 10 winners and 
  * losers*/
-void display_scoreboard(struct result * scoreboard)
+void display_scoreboard()
 {
-      
+  printf("|================RECENT=GAMES====================|\n");
+  printf("| WINNERS                | LOSERS                |\n");
+  printf("--------------------------------------------------\n");
+  FILE *fp = fopen("scoreboard.txt", "r");
+  char content[PREV_NINE_SIZE] = {'\0'};
+  int i;
+  for(i = 0; i < 9; ++i)
+  {
+    if(fgets(content, 51, fp) != NULL);
+    printf("%s\n", content);
+  }
+  printf("%s\n", content);
+
+  char yn = 'n';
+  printf("Back to menu? (y/n):\n");
+  while(yn != 'y')
+  {
+    yn = read_input();
+  }
 }
 

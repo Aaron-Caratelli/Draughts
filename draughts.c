@@ -13,7 +13,7 @@
 
 int main (int argc, char *argv[])
 {
-	char sel = '\0';
+	int sel = 0;
 
     enum cell_contents master_board[BOARDWIDTH][BOARDHEIGHT];
 
@@ -41,40 +41,14 @@ int main (int argc, char *argv[])
  	return;
  }
 
-char read_input()
-{
-	char input[SELECTION_SIZE + 2];
-	int done = 0;
-	char choice = '0';
-
-	do
-	{
-		printf("\nInput: ");
-		fgets(input, SELECTION_SIZE + 2, stdin);
-		if(input[strlen(input)-1] != '\n')
-		{
-			printf("Error: Input was too long. \n");
-			read_rest_of_line();
-		}
-		else
-		{
-			input[strlen(input)-1] = '\0';
-			done = 1;
-		}
-	}	while(done != 1);
-
-    choice = input[0];
-    return choice;
-}
-
-void do_option(char choice)
+void do_option(int choice)
 {
 	int Exit = 0;
 	int valid = 0;
 
 	while(!Exit)
 	{	
-		if(choice == '1')
+		if(choice == 1)
 		{
 			char player_one[MAX_NAME_LEN] = {'\0'};
 			char player_two[MAX_NAME_LEN] = {'\0'};
@@ -86,13 +60,13 @@ void do_option(char choice)
 			{
 				if(player_one[strlen(player_one)-1] != '\n')
 				{
-					printf("Error: Input was too long or invalid. \n");				//NOTE: Here's where I left off. Input validation not complete
+					printf("Error: Input was too long or invalid. \n");
 					read_rest_of_line();
 					do_option(choice);
 				}
 				else
 				{
-					player_one[strlen(player_one)-1] = '\0';printf("%s\n", player_one);
+					player_one[strlen(player_one)-1] = '\0';
 				}
 
 				while(1)
@@ -107,7 +81,7 @@ void do_option(char choice)
 						}
 						else
 						{
-							player_two[strlen(player_two)-1] = '\0';printf("%s\n", player_two);
+							player_two[strlen(player_two)-1] = '\0';;
 						}
 
     					struct result scoreboard[SCOREBOARDSIZE];		//initialise scoreboard
@@ -126,15 +100,19 @@ void do_option(char choice)
 				read_rest_of_line();
 			}
 		}
-		else if(choice == '2')
+		else if(choice == 2)
 		{
-			printf("Leaderboard selected\n");
+			display_scoreboard();
+			clear_screen();
+			print_menu();
+			choice = read_input();
 		}
-		else if(choice == '3')
+		else if(choice == 3)
 		{
-			printf("Reset scores selected\n");
+			struct result scoreboard[SCOREBOARDSIZE];
+			reset_scoreboard(scoreboard);
 		}
-		else if(choice == '4')
+		else if(choice == 4)
 		{
 			printf("Quit selected\n");
 			Exit = 1;

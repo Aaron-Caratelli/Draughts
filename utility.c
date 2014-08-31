@@ -20,6 +20,34 @@
     clearerr(stdin);
 }
 
+int read_input()
+{
+	char input[SELECTION_SIZE + 2];
+	int done = 0;
+	int choice = 0;
+	int char_conversion = 48; //difference between char '1' and int 1
+
+	do
+	{
+		printf("\nInput: ");
+		fgets(input, SELECTION_SIZE + 2, stdin);
+		if(input[strlen(input)-1] != '\n')
+		{
+			printf("Error: Input was too long. \n");
+			read_rest_of_line();
+		}
+		else
+		{
+			input[strlen(input)-1] = '\0';
+			done = 1;
+		}
+	}	while(done != 1);
+
+	//Converts numeric char to int
+    choice = input[0]-char_conversion;
+    return choice;
+}
+
 void clear_screen(void)
 {
 	int count = 0;

@@ -13,11 +13,8 @@
 #include "game.h"
 #include "utility.h"
 
-#define SELECTION_SIZE 1
-
 /*Displays the main menu on the screen*/
  void print_menu();
- char read_input();
- void do_option(char choice);
+ void do_option(int choice);
 
 #endif

@@ -35,6 +35,6 @@ void reset_scoreboard(struct result * scoreboard);
 
 /* Req 10 - Displays a formatted printout of the last 10 winners and 
  * losers*/
-void display_scoreboard(struct result * scoreboard);
+void display_scoreboard();
 
 #endif

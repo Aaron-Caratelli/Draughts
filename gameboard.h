@@ -19,7 +19,7 @@
 #define RED_DISPLAY "\x1b[31m" "o"
 #define RED_KING_DISPLAY "\x1b[31m" "O"
 #define WHITE_RESET "\x1b[39m"
-
+#define RED_SET "\x1b[31m"
 
 enum cell_contents
 {

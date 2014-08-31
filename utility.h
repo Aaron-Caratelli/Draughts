@@ -15,17 +15,19 @@
 #include <string.h>
 
 #define MAX_NAME_LEN 20
+#define SELECTION_SIZE 1
 
 
-typedef enum booleans
+typedef enum
 {
     FALSE, TRUE
-} BOOLEAN;
+}BOOLEAN;
 
 /*Reads user input from keyboard*/
 //void read_input();
 /*Clears residual data from stdin*/
 void read_rest_of_line(void);
+int read_input();
 void clear_screen(void);
 
 #endif
