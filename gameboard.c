@@ -17,7 +17,7 @@ void init_gameboard(enum cell_contents board[][BOARDWIDTH])
     {
     	for(j = 0; j < BOARDHEIGHT; j++)
     	{
-    		board[i][j] = master_board[i][j];
+    		board[i][j] = test_board[i][j];
     	}
 
     }

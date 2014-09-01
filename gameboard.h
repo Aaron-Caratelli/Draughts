@@ -20,6 +20,7 @@
 #define RED_KING_DISPLAY "\x1b[31m" "O"
 #define WHITE_RESET "\x1b[39m"
 #define RED_SET "\x1b[31m"
+#define GREEN_SET "\x1b[32m"
 
 enum cell_contents
 {
@@ -39,6 +40,30 @@ static const enum cell_contents master_board[BOARDWIDTH][BOARDHEIGHT] =
     {EMPTY, WHITE, EMPTY, WHITE, EMPTY, WHITE, EMPTY, WHITE}, 
     {WHITE, EMPTY, WHITE, EMPTY, WHITE, EMPTY, WHITE, EMPTY}, 
     {EMPTY, WHITE, EMPTY, WHITE, EMPTY, WHITE, EMPTY, WHITE}
+};
+
+static const enum cell_contents test_board[BOARDWIDTH][BOARDHEIGHT] = 
+{
+    {RED, 	EMPTY, 	RED, 	EMPTY, 	RED, 	EMPTY, RED, EMPTY}, 
+    {EMPTY, RED, 	EMPTY, 	RED, 	EMPTY, 	EMPTY, EMPTY, RED}, 
+    {RED, 	EMPTY, 	RED, 	EMPTY, 	K_RED, 	EMPTY, RED, EMPTY}, 
+    {EMPTY, EMPTY, 	EMPTY, 	EMPTY, 	EMPTY, 	WHITE, EMPTY, EMPTY}, 
+    {EMPTY, EMPTY, 	RED, 	EMPTY, 	EMPTY, 	EMPTY, EMPTY, EMPTY}, 
+    {EMPTY, EMPTY, 	EMPTY, 	WHITE, 	EMPTY, 	WHITE, EMPTY, WHITE}, 
+    {WHITE, RED, 	RED, 	EMPTY, 	EMPTY, 	EMPTY, WHITE, EMPTY}, 
+    {EMPTY, WHITE, 	EMPTY, 	WHITE, EMPTY, 	WHITE, EMPTY, K_RED}
+};
+
+static const enum cell_contents saved_board[BOARDWIDTH][BOARDHEIGHT] = 
+{
+    {RED, EMPTY, RED, EMPTY, K_WHITE, EMPTY, EMPTY, EMPTY}, 
+    {EMPTY, EMPTY, EMPTY, RED, EMPTY, EMPTY, EMPTY, EMPTY}, 
+    {RED, EMPTY, RED, EMPTY, RED, EMPTY, EMPTY, EMPTY}, 
+    {EMPTY, RED, EMPTY, RED, EMPTY, RED, EMPTY, EMPTY}, 
+    {WHITE, EMPTY, WHITE, EMPTY, EMPTY, EMPTY, WHITE, EMPTY}, 
+    {EMPTY, WHITE, EMPTY, WHITE, EMPTY, EMPTY, EMPTY, WHITE}, 
+    {EMPTY, EMPTY, WHITE, EMPTY, WHITE, EMPTY, EMPTY, EMPTY}, 
+    {EMPTY, EMPTY, EMPTY, WHITE, EMPTY, EMPTY, EMPTY, WHITE}
 };
 
 /* Requirement 3 - Copies the contents of the master_board to a local

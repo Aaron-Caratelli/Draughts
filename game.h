@@ -53,6 +53,10 @@ void play_game(char * player_one, char * player_two,
 
 /* Requirement 4 - Tests to see whether a move is valid or not*/
 enum move_type is_valid_move(struct move curr_move, struct player * 
+    current, enum cell_contents board[][BOARDWIDTH], int chain);
+
+/*Checks for extra jumps after a player makes a successful attack*/
+enum move_type continue_attack(struct move curr_move, struct player * 
     current, enum cell_contents board[][BOARDWIDTH]);
 
 /* Requirement  - Tests whether the next player has any valid moves */
@@ -62,6 +66,8 @@ BOOLEAN test_for_winner(struct player * next_player,
 /* Requirement 5 - Handles the logic for the player's turn*/
 enum str_result player_turn(struct player * current, 
     enum cell_contents board[][BOARDWIDTH]);
+
+ int data_check(int y, int x, int * count);
 
 
 #endif

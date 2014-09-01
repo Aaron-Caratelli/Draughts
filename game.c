@@ -88,6 +88,7 @@ enum str_result player_turn(struct player * current,
 {
     struct move next_move;
     struct player Player = *current;
+    int second_turn = 0;
 
     enum move_type state = NORMAL;
     do 
@@ -98,6 +99,15 @@ enum str_result player_turn(struct player * current,
             printf("%s", RED_SET);
             printf("INVLAID MOVE");
             printf("%s\n", WHITE_RESET);
+        }
+
+        if(state == ATTACK)
+        {
+            printf("%s", GREEN_SET);
+            printf("ATTACK AVAILABLE");
+            printf("%s\n", WHITE_RESET);
+
+            second_turn = 1;
         }
 
         if(Player.col == P_RED)
@@ -112,25 +122,58 @@ enum str_result player_turn(struct player * current,
             printf("%s's turn: \n", Player.name);
         }
 
-        printf("Select piece to move: \n");
-        printf("Row");  
-        next_move.start.y = read_input();
-        printf("Column");
-        next_move.start.x = read_input();
+        if(!second_turn)
+        {
+            printf("Select piece to move: \n");
+            printf("Row");  
+            next_move.start.y = read_input();
+            printf("Column");
+            next_move.start.x = read_input();
 
-        printf("Select destination: \n");
-        printf("Row");
-        next_move.end.y = read_input();
-        printf("Column");
-        next_move.end.x = read_input();
-        state = is_valid_move(next_move, current, board);
+            printf("Select destination: \n");
+            printf("Row");
+            next_move.end.y = read_input();
+            printf("Column");
+            next_move.end.x = read_input();
+            state = is_valid_move(next_move, current, board, second_turn);
+        }
+        else if(second_turn)
+        {
+            next_move.start.y = next_move.end.y;
+            next_move.start.x = next_move.end.x;
 
-    }while(state == INVALID);
+            do{
+                if(state == INVALID)
+                {
+                    display_gameboard(board);
+                    printf("%s", RED_SET);
+                    printf("INVLAID MOVE\n");
+                    printf("%s", GREEN_SET);
+                    printf("ATTACK AVAILABLE");
+                    printf("%s\n", WHITE_RESET);
+                }
+                printf("Select next attack: \n");
+                printf("Row");
+                next_move.end.y = read_input();
+                printf("Column");
+                next_move.end.x = read_input();
+                state = is_valid_move(next_move, current, board, second_turn);
+            }while(state == INVALID);
+            second_turn = 0;
+        }
+        if(state == ATTACK)
+        {
+            state = continue_attack(next_move, current, board);
+            if(state == NORMAL)
+                second_turn = 0;
+        }
+
+    }while(state != NORMAL);
 }
 
 /* Requirement 4 - Tests to see whether a move is valid or not*/
 enum move_type is_valid_move(struct move next_move, 
-    struct player * current, enum cell_contents board[][BOARDWIDTH])
+    struct player * current, enum cell_contents board[][BOARDWIDTH], int chain)
 {
     struct player Player = *current;
 
@@ -151,25 +194,41 @@ enum move_type is_valid_move(struct move next_move,
         {
             if(next_move.start.x - next_move.end.x == -1 || next_move.start.x - next_move.end.x == 1)
             {
-                if(next_move.start.y - next_move.end.y == -1 || next_move.start.y - next_move.end.y == 1) //change
+                if(next_move.start.y - next_move.end.y == 1)
+                {
+                    if(chain == 0)
+                    {
+                        board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
+                        board[next_move.start.y][next_move.start.x] = EMPTY;
+                        if(next_move.end.y == 0)
+                            board[next_move.end.y][next_move.end.x] = K_WHITE;
+                        return NORMAL;
+                    }
+                }
+                if(next_move.start.y - next_move.end.y == -1 && board[next_move.start.y][next_move.start.x] == K_WHITE)
                 {
                     board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
                     board[next_move.start.y][next_move.start.x] = EMPTY;
+                    if(next_move.end.y == 0)
+                        board[next_move.end.y][next_move.end.x] = K_WHITE;
                     return NORMAL;
                 }
                 else
                     return INVALID;
             }
+
             else if(next_move.start.x - next_move.end.x == -2)
             {
                 if(next_move.start.y - next_move.end.y == 2)
                 {
-                    if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == RED
-                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_RED)
+                    if(board[next_move.start.y - 1][next_move.start.x + 1] == RED
+                        || board[next_move.start.y - 1][next_move.start.x + 1] == K_RED)
                     {
                         board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
                         board[next_move.start.y][next_move.start.x] = EMPTY;
-                        board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                        board[next_move.start.y - 1][next_move.start.x + 1] = EMPTY;
+                        if(next_move.end.y == 0)
+                            board[next_move.end.y][next_move.end.x] = K_WHITE;
                         return ATTACK;
                     }
                     return INVALID;
@@ -178,12 +237,14 @@ enum move_type is_valid_move(struct move next_move,
                 {
                     if(board[next_move.start.y][next_move.start.x] == K_WHITE)
                     {
-                        if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == RED
-                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_RED)
+                        if(board[next_move.start.y + 1][next_move.start.x + 1] == RED
+                        || board[next_move.start.y + 1][next_move.start.x + 1] == K_RED)
                         {
                             board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
                             board[next_move.start.y][next_move.start.x] = EMPTY;
-                            board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                            board[next_move.start.y + 1][next_move.start.x + 1] = EMPTY;
+                            if(next_move.end.y == 0)
+                                board[next_move.end.y][next_move.end.x] = K_WHITE;
                             return ATTACK;
                         }
                         return INVALID;
@@ -195,12 +256,14 @@ enum move_type is_valid_move(struct move next_move,
             {
                 if(next_move.start.y - next_move.end.y == 2)
                 {
-                    if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == RED
-                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_RED)
+                    if(board[next_move.start.y - 1][next_move.start.x - 1] == RED
+                        || board[next_move.start.y - 1][next_move.start.x - 1] == K_RED)
                     {
                         board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
                         board[next_move.start.y][next_move.start.x] = EMPTY;
-                        board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                        board[next_move.start.y - 1][next_move.start.x - 1] = EMPTY;
+                        if(next_move.end.y == 0)
+                            board[next_move.end.y][next_move.end.x] = K_WHITE;
                         return ATTACK;
                     }
                     return INVALID;
@@ -209,25 +272,24 @@ enum move_type is_valid_move(struct move next_move,
                 {
                     if(board[next_move.start.y][next_move.start.x] == K_WHITE)
                     {
-                        if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == RED
-                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_RED)
+                        if(board[next_move.start.y + 1][next_move.start.x - 1] == RED
+                        || board[next_move.start.y + 1][next_move.start.x - 1] == K_RED)
                         {
                             board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
                             board[next_move.start.y][next_move.start.x] = EMPTY;
-                            board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                            board[next_move.start.y + 1][next_move.start.x - 1] = EMPTY;
+                            if(next_move.end.y == 0)
+                                board[next_move.end.y][next_move.end.x] = K_WHITE;
                             return ATTACK;
                         }
                         return INVALID;
                     }
                     return INVALID;
                 }
+                return INVALID;
             }
             return INVALID;
         }
-
-        //Is it one away?
-        //Is is it 2 away?
-            //is there a piece in between?
         return INVALID;
     }
     else if(Player.col == P_RED)
@@ -242,39 +304,56 @@ enum move_type is_valid_move(struct move next_move,
         {
             if(next_move.start.x - next_move.end.x == -1 || next_move.start.x - next_move.end.x == 1)
             {
-                if(next_move.start.y - next_move.end.y == -1 || next_move.start.y - next_move.end.y == 1) //change
+                if(next_move.start.y - next_move.end.y == -1)
+                {
+                    if(chain == 0)
+                    {
+                        board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
+                        board[next_move.start.y][next_move.start.x] = EMPTY;
+                        if(next_move.end.y == 7)
+                            board[next_move.end.y][next_move.end.x] = K_RED;
+                        return NORMAL;
+                    }
+                }
+                if(next_move.start.y - next_move.end.y == + 1 && board[next_move.start.y][next_move.start.x] == K_RED)
                 {
                     board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
                     board[next_move.start.y][next_move.start.x] = EMPTY;
+                    if(next_move.end.y == 7)
+                        board[next_move.end.y][next_move.end.x] = K_RED;
                     return NORMAL;
-                }
+                } 
                 else
                     return INVALID;
             }
             else if(next_move.start.x - next_move.end.x == -2)
             {
-                if(next_move.start.y - next_move.end.y == 2)
+                if(next_move.start.y - next_move.end.y == -2)
                 {
-                    if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == WHITE
-                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_WHITE)
+                    if(board[next_move.start.y + 1][next_move.start.x + 1] == WHITE 
+                        || board[next_move.start.y + 1][next_move.start.x + 1] == K_WHITE)
                     {
                         board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
                         board[next_move.start.y][next_move.start.x] = EMPTY;
-                        board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                        board[next_move.start.y + 1][next_move.start.x + 1] = EMPTY;
+                        if(next_move.end.y == 7)
+                            board[next_move.end.y][next_move.end.x] = K_RED;
                         return ATTACK;
                     }
                     return INVALID;
                 }
-                else if(next_move.start.y - next_move.end.y == -2)
+                else if(next_move.start.y - next_move.end.y == 2)
                 {
-                    if(board[next_move.start.y][next_move.start.x] == K_WHITE)
+                    if(board[next_move.start.y][next_move.start.x] == K_RED)
                     {
-                        if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == WHITE
-                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_WHITE)
+                        if(board[next_move.start.y - 1][next_move.start.x + 1] == WHITE
+                        || board[next_move.start.y - 1][next_move.start.x + 1] == K_WHITE)
                         {
                             board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
                             board[next_move.start.y][next_move.start.x] = EMPTY;
-                            board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                            board[next_move.start.y - 1][next_move.start.x + 1] = EMPTY;
+                            if(next_move.end.y == 7)
+                                board[next_move.end.y][next_move.end.x] = K_RED;
                             return ATTACK;
                         }
                         return INVALID;
@@ -284,28 +363,32 @@ enum move_type is_valid_move(struct move next_move,
             }
             else if(next_move.start.x - next_move.end.x == 2)
             {
-                if(next_move.start.y - next_move.end.y == 2)
+                if(next_move.start.y - next_move.end.y == -2)
                 {
-                    if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == WHITE
-                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_WHITE)
+                    if(board[next_move.start.y + 1][next_move.start.x - 1] == WHITE
+                        || board[next_move.start.y + 1][next_move.start.x - 1] == K_WHITE)
                     {
                         board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
                         board[next_move.start.y][next_move.start.x] = EMPTY;
-                        board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                        board[next_move.start.y + 1][next_move.start.x - 1] = EMPTY;
+                        if(next_move.end.y == 7)
+                            board[next_move.end.y][next_move.end.x] = K_RED;
                         return ATTACK;
                     }
                     return INVALID;
                 }
-                else if(next_move.start.y - next_move.end.y == -2)
+                else if(next_move.start.y - next_move.end.y == 2)
                 {
-                    if(board[next_move.start.y][next_move.start.x] == K_WHITE)
+                    if(board[next_move.start.y][next_move.start.x] == K_RED)
                     {
-                        if(board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == WHITE
-                        || board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] == K_WHITE)
+                        if(board[next_move.start.y - 1][next_move.start.x - 1] == WHITE
+                        || board[next_move.start.y - 1][next_move.start.x - 1] == K_WHITE)
                         {
                             board[next_move.end.y][next_move.end.x] = board[next_move.start.y][next_move.start.x];
                             board[next_move.start.y][next_move.start.x] = EMPTY;
-                            board[next_move.start.y - next_move.end.y][next_move.start.x - next_move.end.x] = EMPTY;
+                            board[next_move.start.y - 1][next_move.start.x - 1] = EMPTY;
+                            if(next_move.end.y == 7)
+                                board[next_move.end.y][next_move.end.x] = K_RED;
                             return ATTACK;
                         }
                         return INVALID;
@@ -321,6 +404,130 @@ enum move_type is_valid_move(struct move next_move,
     
     return INVALID;
 }
+
+enum move_type continue_attack(struct move next_move, 
+    struct player * current, enum cell_contents board[][BOARDWIDTH])
+{
+    struct player Player = *current;
+    int checker;
+    int counter = 0;
+    int * count = &counter;
+    enum move_type state = NORMAL;
+
+
+    while(counter < 4)
+    {
+        if(Player.col == P_RED)
+        {
+            checker = data_check(next_move.end.y, next_move.end.x, count);
+            
+            switch(checker)
+            {
+                case 1: 
+                    if(board[next_move.end.y][next_move.end.x] == K_RED)
+                    { 
+                        if(board[next_move.end.y - 1][next_move.end.x + 1] == WHITE 
+                        || board[next_move.end.y - 1][next_move.end.x + 1] == K_WHITE)
+                        {
+                            if(board[next_move.end.y - 2][next_move.end.x + 2] == EMPTY)
+                            {
+                                state = ATTACK;
+                            }
+                        }
+                    }
+                    break;
+                case 2:
+                    if(board[next_move.end.y][next_move.end.x] == K_RED)
+                    { 
+                        if(board[next_move.end.y - 1][next_move.end.x - 1] == WHITE 
+                        || board[next_move.end.y - 1][next_move.end.x - 1] == K_WHITE)
+                        {
+                            if(board[next_move.end.y - 2][next_move.end.x - 2] == EMPTY)
+                            {
+                                state = ATTACK;
+                            }
+                        }
+                    }
+                    break;
+                case 3:
+                    if(board[next_move.end.y + 1][next_move.end.x + 1] == WHITE
+                    || board[next_move.end.y + 1][next_move.end.x + 1] == K_WHITE)
+                    {
+                        if(board[next_move.end.y + 2][next_move.end.x + 2] == EMPTY)
+                        {
+                            state = ATTACK;
+                        }
+                    }
+                    break;
+                case 4:
+                    if(board[next_move.end.y + 1][next_move.end.x - 1] == WHITE
+                    || board[next_move.end.y + 1][next_move.end.x - 1] == K_WHITE)
+                    {
+                        if(board[next_move.end.y + 2][next_move.end.x - 2] == EMPTY)
+                            state = ATTACK;
+                    }
+                    break;
+                default:
+                    state = NORMAL;
+            }
+        }
+        else if(Player.col == P_WHITE)
+        {
+            checker = data_check(next_move.end.y, next_move.end.x, count);
+
+            switch(checker)
+            {
+                case 1: 
+                    if(board[next_move.end.y - 1][next_move.end.x + 1] == RED 
+                    || board[next_move.end.y - 1][next_move.end.x + 1] == K_RED)
+                    {
+                        if(board[next_move.end.y - 2][next_move.end.x + 2] == EMPTY)
+                        {
+                            state = ATTACK;
+                        }
+                    }
+                    break;
+                case 2:
+                    if(board[next_move.end.y - 1][next_move.end.x - 1] == RED 
+                    || board[next_move.end.y - 1][next_move.end.x - 1] == K_RED)
+                    {
+                        if(board[next_move.end.y - 2][next_move.end.x - 2] == EMPTY)
+                        {
+                            state = ATTACK;
+                        }
+                    }
+                    break;
+                case 3:
+                    if(board[next_move.end.y][next_move.end.x] == K_WHITE)
+                    { 
+                        if(board[next_move.end.y + 1][next_move.end.x + 1] == RED
+                        || board[next_move.end.y + 1][next_move.end.x + 1] == K_RED)
+                        {
+                            if(board[next_move.end.y + 2][next_move.end.x + 2] == EMPTY)
+                            {
+                                state = ATTACK;
+                                printf("%d\n", state);
+                            }
+                        }
+                    }
+                    break;
+                case 4:
+                    if(board[next_move.end.y][next_move.end.x] == K_WHITE)
+                    { 
+                        if(board[next_move.end.y + 1][next_move.end.x - 1] == RED
+                        || board[next_move.end.y + 1][next_move.end.x - 1] == K_RED)
+                        {
+                            if(board[next_move.end.y + 2][next_move.end.x - 2] == EMPTY)
+                                state = ATTACK;
+                        }
+                    }
+                    break;
+            }
+        }
+    } //While loop end
+    return state;
+}
+
 
 /* Requirement  - Tests whether the next player has any valid moves */
 BOOLEAN test_for_winner(struct player * next_player, 
@@ -341,4 +548,45 @@ void quit_early(struct result * scoreboard,
 {
     init_scoreboard(latest_game);
     add_to_scoreboard(latest_game);
+}
+
+int data_check(int y, int x, int * count)
+{
+    printf("%d %d %d\n", y, x, *count);
+    if(y < 6 && *count < 2)
+    {
+        if(x < 6 && *count < 1)
+        {
+            printf("++\n");
+            *count = *count + 1;
+            return 3;
+        }
+        if(x > 1)
+        {
+
+            printf("+-\n");
+            *count = *count + 1;
+            return 4;
+        }
+
+    }
+    else if(y > 1 && *count < 4)
+    {
+        if(x < 6 && *count < 3)
+        {
+
+            printf("-+\n");
+            *count = *count + 1;
+            return 1;
+        }
+        if(x > 1)
+        {
+
+            printf("--\n");
+            *count = *count + 1;
+            return 2;
+        }
+    }
+    *count = *count + 1;
+    return 0;
 }
