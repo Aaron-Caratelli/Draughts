@@ -48,32 +48,38 @@ void play_game(char * player_one, char * player_two,
         p1.col = P_WHITE;
         p2.col = P_RED;
     }
-    printf("%d\n", p1.col);
 
-    printf("%s %d\n", p1.name, p1.col);
-    printf("%s %d\n", p2.name, p2.col);
-
-    printf("%s is %d\n", p1.name, p1.col);
-
-    printf("%s is %d\n", p2.name, p2.col);
+    //set a pointer to the current player location and make RED
     struct player * cp = &current;
     current.col = P_WHITE;
-    while(test_for_winner(cp, gameboard) != 0)
-    {
-        if(current.col == p1.col)
+    //Check which player is RED, make them the current player
+    /*This actually makes the opposite player current to allow
+    for the initail swap in the do-while loop below*/
+    if(current.col == p1.col)
         {
             current = p2;
-            printf("Setting to player 2's turn.\n");
         }
         else if(current.col == p2.col)
         {
             current = p1;
-            printf("Setting to player 1's turn.\n");
         }
+        do
+        {
+            player_turn(cp, gameboard);
 
-        player_turn(cp, gameboard);
-    }
+            if(current.col == p1.col)
+            {
+                current = p2;
+                printf("Setting to player 2's turn.\n");
+            }
+            else if(current.col == p2.col)
+            {
+                current = p1;
+                printf("Setting to player 1's turn.\n");
+            }
+        } while (test_for_winner(cp, gameboard) != 0);
 
+        
     if(current.col == p1.col)
         printf("%s wins\n", p2.name); // Then pass name data into result.
     if(current.col == p2.col)
@@ -175,6 +181,7 @@ enum str_result player_turn(struct player * current,
 enum move_type is_valid_move(struct move next_move, 
     struct player * current, enum cell_contents board[][BOARDWIDTH], int chain)
 {
+    int i, j;
     struct player Player = *current;
 
     if(board[next_move.start.y][next_move.start.x] == EMPTY)
@@ -204,6 +211,10 @@ enum move_type is_valid_move(struct move next_move,
                             board[next_move.end.y][next_move.end.x] = K_WHITE;
                         return NORMAL;
                     }
+                    else if(chain == TEST_CODE)
+                    {
+                        return NORMAL;
+                    }
                 }
                 if(next_move.start.y - next_move.end.y == -1 && board[next_move.start.y][next_move.start.x] == K_WHITE)
                 {
@@ -211,6 +222,10 @@ enum move_type is_valid_move(struct move next_move,
                     board[next_move.start.y][next_move.start.x] = EMPTY;
                     if(next_move.end.y == 0)
                         board[next_move.end.y][next_move.end.x] = K_WHITE;
+                    return NORMAL;
+                }
+                else if(chain == TEST_CODE)
+                {
                     return NORMAL;
                 }
                 else
@@ -231,6 +246,11 @@ enum move_type is_valid_move(struct move next_move,
                             board[next_move.end.y][next_move.end.x] = K_WHITE;
                         return ATTACK;
                     }
+                    else if(chain == TEST_CODE)
+                    {
+                        return NORMAL;
+                    }
+                    else
                     return INVALID;
                 }
                 else if(next_move.start.y - next_move.end.y == -2)
@@ -245,6 +265,10 @@ enum move_type is_valid_move(struct move next_move,
                             board[next_move.start.y + 1][next_move.start.x + 1] = EMPTY;
                             if(next_move.end.y == 0)
                                 board[next_move.end.y][next_move.end.x] = K_WHITE;
+                            return ATTACK;
+                        }
+                        else if(chain == TEST_CODE)
+                        {
                             return ATTACK;
                         }
                         return INVALID;
@@ -266,6 +290,10 @@ enum move_type is_valid_move(struct move next_move,
                             board[next_move.end.y][next_move.end.x] = K_WHITE;
                         return ATTACK;
                     }
+                    else if(chain == TEST_CODE)
+                    {
+                        return ATTACK;
+                    }
                     return INVALID;
                 }
                 else if(next_move.start.y - next_move.end.y == -2)
@@ -280,6 +308,10 @@ enum move_type is_valid_move(struct move next_move,
                             board[next_move.start.y + 1][next_move.start.x - 1] = EMPTY;
                             if(next_move.end.y == 0)
                                 board[next_move.end.y][next_move.end.x] = K_WHITE;
+                            return ATTACK;
+                        }
+                        else if(chain == TEST_CODE)
+                        {
                             return ATTACK;
                         }
                         return INVALID;
@@ -314,6 +346,12 @@ enum move_type is_valid_move(struct move next_move,
                             board[next_move.end.y][next_move.end.x] = K_RED;
                         return NORMAL;
                     }
+                    else if(chain == TEST_CODE)
+                    {
+                        return NORMAL;
+                    }
+                    else
+                        return INVALID;
                 }
                 if(next_move.start.y - next_move.end.y == + 1 && board[next_move.start.y][next_move.start.x] == K_RED)
                 {
@@ -321,6 +359,10 @@ enum move_type is_valid_move(struct move next_move,
                     board[next_move.start.y][next_move.start.x] = EMPTY;
                     if(next_move.end.y == 7)
                         board[next_move.end.y][next_move.end.x] = K_RED;
+                    return NORMAL;
+                }
+                else if(chain == TEST_CODE)
+                {
                     return NORMAL;
                 } 
                 else
@@ -340,6 +382,10 @@ enum move_type is_valid_move(struct move next_move,
                             board[next_move.end.y][next_move.end.x] = K_RED;
                         return ATTACK;
                     }
+                    else if(chain == TEST_CODE)
+                    {
+                        return ATTACK;
+                    }
                     return INVALID;
                 }
                 else if(next_move.start.y - next_move.end.y == 2)
@@ -354,6 +400,10 @@ enum move_type is_valid_move(struct move next_move,
                             board[next_move.start.y - 1][next_move.start.x + 1] = EMPTY;
                             if(next_move.end.y == 7)
                                 board[next_move.end.y][next_move.end.x] = K_RED;
+                            return ATTACK;
+                        }
+                        else if(chain == TEST_CODE)
+                        {
                             return ATTACK;
                         }
                         return INVALID;
@@ -375,6 +425,10 @@ enum move_type is_valid_move(struct move next_move,
                             board[next_move.end.y][next_move.end.x] = K_RED;
                         return ATTACK;
                     }
+                    else if(chain == TEST_CODE)
+                    {
+                        return ATTACK;
+                    }
                     return INVALID;
                 }
                 else if(next_move.start.y - next_move.end.y == 2)
@@ -389,6 +443,10 @@ enum move_type is_valid_move(struct move next_move,
                             board[next_move.start.y - 1][next_move.start.x - 1] = EMPTY;
                             if(next_move.end.y == 7)
                                 board[next_move.end.y][next_move.end.x] = K_RED;
+                            return ATTACK;
+                        }
+                        else if(chain == TEST_CODE)
+                        {
                             return ATTACK;
                         }
                         return INVALID;
@@ -533,13 +591,72 @@ enum move_type continue_attack(struct move next_move,
 BOOLEAN test_for_winner(struct player * next_player, 
     enum cell_contents board[][BOARDWIDTH])
 {
-    //LOGIC
+    struct player Player = *next_player;
+    struct move c_move;
+    enum move_type test;
+    int i, j, k, l;
+    int count = TEST_CODE;
+    int has_moves = 0;
+    if(Player.col == P_WHITE)
+    {
+        for(i = 0; i < 8; ++i)
+        {
+            for(j = 0; j < 8; ++j)
+            {
+                if(board[i][j] == WHITE || board[i][j] == K_WHITE)
+                {
+                    c_move.start.y = i;
+                    c_move.start.x = j;
+                    test = NORMAL;
 
-    //if(is_valid_move == TURE)
-    BOOLEAN has_moves = TRUE;
-    //else
-    //BOOLEAN has_moves = FALSE;
+                    for(k = 0; k < 8; ++k)
+                    {
+                        for(l = 0; l < 8; ++l)
+                        {
+                            c_move.end.y = k;
+                            c_move.end.x = l;
+                            test = is_valid_move(c_move, next_player, board, count);
+                            if(test == NORMAL || test == ATTACK)
+                            {
+                                has_moves = 1;
+                                return has_moves;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    else if(Player.col == P_RED)
+    {
+        for(i = 0; i < 8; ++i)
+        {
+            for(j = 0; j < 8; ++j)
+            {
+                if(board[i][j] == RED || board[i][j] == K_RED)
+                {
+                    c_move.start.y = i;
+                    c_move.start.x = j;
+                    test = NORMAL;
 
+                    for(k = 0; k < 8; ++k)
+                    {
+                        for(l = 0; l < 8; ++l)
+                        {
+                            c_move.end.y = k;
+                            c_move.end.x = l;
+                            test = is_valid_move(c_move, next_player, board, count);
+                            if(test == NORMAL || test == ATTACK)
+                            {
+                                has_moves = 1;
+                                return has_moves;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     return has_moves;
 }
 

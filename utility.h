@@ -16,6 +16,7 @@
 
 #define MAX_NAME_LEN 20
 #define SELECTION_SIZE 1
+ #define TEST_CODE 9
 
 
 typedef enum
